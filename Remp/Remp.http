@@ -1,0 +1,6 @@
+@Remp_HostAddress = http://localhost:5100
+
+GET {{Remp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
