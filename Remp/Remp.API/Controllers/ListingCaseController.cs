@@ -73,8 +73,7 @@ namespace Remp.Remp.API.Controllers
             ListingCase listingCase = await _listingCaseService.GetListingCaseByIdAsync(id);
             if (listingCase == null)
             {
-                _logger.LogWarning($"Get ListingCase By Id: ListingCase with id {id} not found");
-                return NotFound();
+                throw new KeyNotFoundException($"Listing case with id {id} not found.");
             }
             ListingCaseResponseDto responseDto = _mapper.Map<ListingCaseResponseDto>(listingCase);
             APIResponses<ListingCaseResponseDto> apiResponse = new APIResponses<ListingCaseResponseDto>
@@ -100,8 +99,7 @@ namespace Remp.Remp.API.Controllers
             ListingCase existingListingCase = await _listingCaseService.GetListingCaseByIdAsync(id);
             if (existingListingCase == null)
             {
-                _logger.LogWarning($"Update ListingCase: Listing case with id {id} not found");
-                return NotFound();
+                throw new KeyNotFoundException($"Listing case with id {id} not found.");
             }
 
             _mapper.Map(listingCaseUpdateDto, existingListingCase);
@@ -129,8 +127,7 @@ namespace Remp.Remp.API.Controllers
             ListingCase existingListingCase = await _listingCaseService.GetListingCaseByIdAsync(id);
             if (existingListingCase == null)
             {
-                _logger.LogWarning($"Delete ListingCase: Listing case with id {id} not found");
-                return NotFound();
+                throw new KeyNotFoundException($"Listing case with id {id} not found.");
             }
 
             bool result = await _listingCaseService.DeleteListingCaseAsync(id);
@@ -139,11 +136,9 @@ namespace Remp.Remp.API.Controllers
                 _logger.LogInformation($"Delete ListingCase: Successfully deleted listing case with id {id}");
                 return NoContent();
             }
-            else
-            {
-                _logger.LogError($"Delete ListingCase: Failed to delete listing case with id {id}");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to delete listing case");
-            }
+            
+            throw new Exception("Failed to delete listing case");
+            
         
         }
 
@@ -160,8 +155,7 @@ namespace Remp.Remp.API.Controllers
             ListingCase existingListingCase = await _listingCaseService.GetListingCaseByIdAsync(id);
             if (existingListingCase == null)
             {
-                _logger.LogWarning($"Update ListingCase Status: Listing case with id {id} not found");
-                return NotFound();
+                throw new KeyNotFoundException($"Listing case with id {id} not found.");
             }
 
             ListingCase updatedListingCase = await _listingCaseService.UpdateListingCaseStatusAsync(id, statusUpdateDto.ListcaseStatus);

@@ -7,6 +7,7 @@ using Remp.Remp.Models.Interfaces.Repositories;
 using Remp.Remp.Models.Interfaces.Services;
 using Remp.Remp.Repository;
 using Remp.Remp.Service;
+using Remp.Remp.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,5 +33,6 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.MapControllers();
 app.Run();

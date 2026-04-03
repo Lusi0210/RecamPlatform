@@ -44,7 +44,7 @@ public class ListingCaseRepository: IListingCaseRepository
         }
         else
         {
-            throw new Exception($"Listing case with ID {id} not found.");
+            throw new KeyNotFoundException($"Listing case with ID {id} not found.");
         }
     }
 
