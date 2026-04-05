@@ -69,6 +69,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
 builder.Services.AddScoped<IMediaAssetService, MediaAssetService>();
 
+builder.Services.AddScoped<ICaseContactRepository, CaseContactRepository>();
+builder.Services.AddScoped<ICaseContactService, CaseContactService>();
+
 var app = builder.Build();
 
 using (IServiceScope scope = app.Services.CreateScope())
