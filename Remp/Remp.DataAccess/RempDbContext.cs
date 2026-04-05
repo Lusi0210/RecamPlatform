@@ -1,10 +1,12 @@
 using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Remp.Remp.Models;
 
 namespace Remp.Remp.DataAccess;
 
-public class RempDbContext : DbContext
+public class RempDbContext : IdentityDbContext<IdentityUser>
 {
     public RempDbContext(DbContextOptions<RempDbContext> options) : base(options)
     {
