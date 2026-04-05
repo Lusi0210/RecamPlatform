@@ -17,6 +17,7 @@ public class ListingCase
     public int Bedrooms { get; set; }
     public int Bathrooms { get; set; }
     public int Garages { get; set; }
+    public double FloorArea { get; set; }
     public DateTime CreatedAt { get; set; }
     public Boolean IsDeleted { get; set; }
     public Enum.PropertyType PropertyType { get; set; }

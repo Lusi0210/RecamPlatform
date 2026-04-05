@@ -220,13 +220,10 @@ namespace Remp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.Agent", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.Agent", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("AgentFirstName")
                         .IsRequired()
@@ -249,20 +246,20 @@ namespace Remp.Migrations
                     b.ToTable("Agents");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.AgentListingCase", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.AgentListingCase", b =>
                 {
                     b.Property<string>("AgentId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ListingCaseId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("ListingCaseId")
+                        .HasColumnType("int");
 
                     b.HasKey("AgentId", "ListingCaseId");
 
                     b.ToTable("AgentListingCases");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.AgentPhotographyCompany", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.AgentPhotographyCompany", b =>
                 {
                     b.Property<string>("AgentId")
                         .HasColumnType("nvarchar(450)");
@@ -275,7 +272,7 @@ namespace Remp.Migrations
                     b.ToTable("AgentPhotographyCompanies");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.CaseContact", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.CaseContact", b =>
                 {
                     b.Property<int>("ContactId")
                         .ValueGeneratedOnAdd()
@@ -315,7 +312,7 @@ namespace Remp.Migrations
                     b.ToTable("CaseContacts");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.ListingCase", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.ListingCase", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -339,6 +336,9 @@ namespace Remp.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("FloorArea")
+                        .HasColumnType("float");
 
                     b.Property<int>("Garages")
                         .HasColumnType("int");
@@ -390,7 +390,7 @@ namespace Remp.Migrations
                     b.ToTable("ListingCases");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.MediaAsset", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.MediaAsset", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -429,7 +429,7 @@ namespace Remp.Migrations
                     b.ToTable("MediaAssets");
                 });
 
-            modelBuilder.Entity("Remp.Remp.Models.PhotographyCompany", b =>
+            modelBuilder.Entity("Remp.Remp.Models.Entities.PhotographyCompany", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");

@@ -4,7 +4,7 @@ namespace Remp.Remp.Models.Entities;
 
 public class Agent
 {
-    public int Id {get; set;}
+    public string Id {get; set;}
     public string AgentFirstName {get; set;}
     public string AgentLastName {get; set;}
     public string AvatarUrl {get; set;}
