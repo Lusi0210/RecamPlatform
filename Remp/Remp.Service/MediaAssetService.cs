@@ -38,4 +38,17 @@ public class MediaAssetService : IMediaAssetService
 
         return groupedMedia;
     }
+
+    public async Task<bool> DeleteMediaAsync(int mediaId, string userId)
+    {
+        MediaAsset mediaAsset = await _mediaAssetRepository.GetMediaByIdAsync(mediaId);
+
+        if (mediaAsset.UserId != userId)
+        {
+            throw new UnauthorizedAccessException("You do not have permission to delete this media asset.");
+        }
+
+        bool result = await _mediaAssetRepository.DeleteMediaAsync(mediaId);
+        return result;
+    }
 }

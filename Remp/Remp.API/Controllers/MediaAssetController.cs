@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Remp.Remp.Common.Responses;
@@ -39,6 +40,29 @@ namespace Remp.Remp.API.Controllers
 
             _logger.LogInformation($"GetMediaByListingCaseId: Returned media for listing case {listingCaseId}");
             return Ok(apiResponse);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DeleteMedia(int id)
+        {
+            _logger.LogInformation($"DeleteMedia: Received request to delete media {id}");
+
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            bool result = await _mediaAssetService.DeleteMediaAsync(id, userId);
+            if (result)
+            {
+                _logger.LogInformation($"DeleteMedia: Successfully deleted media {id}");
+                return NoContent();
+            }
+
+            throw new Exception("Failed to delete media asset.");
         }
     }
 }

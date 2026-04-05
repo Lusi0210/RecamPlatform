@@ -22,4 +22,29 @@ public class MediaAssetRepository : IMediaAssetRepository
             .OrderByDescending(m => m.UploadedAt)
             .ToListAsync();
     }
+
+    public async Task<MediaAsset> GetMediaByIdAsync(int id)
+    {
+        MediaAsset? mediaAsset = await _dbContext.MediaAssets
+            .FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
+        if (mediaAsset == null)
+        {
+            throw new KeyNotFoundException($"Media asset with ID {id} not found.");
+        }
+        return mediaAsset;
+    }
+
+    public async Task<bool> DeleteMediaAsync(int id)
+    {
+        MediaAsset? mediaAsset = await _dbContext.MediaAssets
+            .FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
+        if (mediaAsset == null)
+        {
+            throw new KeyNotFoundException($"Media asset with ID {id} not found.");
+        }
+        mediaAsset.IsDeleted = true;
+        _dbContext.MediaAssets.Update(mediaAsset);
+        int changes = await _dbContext.SaveChangesAsync();
+        return changes > 0;
+    }
 }

@@ -6,4 +6,5 @@ namespace Remp.Remp.Models.Interfaces.Services;
 public interface IMediaAssetService
 {
     Task<List<GroupedMediaResponseDto>> GetMediaByListingCaseIdAsync(int listingCaseId);
+    Task<bool> DeleteMediaAsync(int mediaId, string userId);
 }
