@@ -66,6 +66,9 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateListingCaseRequestDto
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
+builder.Services.AddScoped<IMediaAssetService, MediaAssetService>();
+
 var app = builder.Build();
 
 using (IServiceScope scope = app.Services.CreateScope())
