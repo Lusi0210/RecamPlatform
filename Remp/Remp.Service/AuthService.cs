@@ -1,0 +1,106 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Remp.Remp.DataAccess;
+using Remp.Remp.Models.DTOs;
+using Remp.Remp.Models.Entities;
+using Remp.Remp.Models.Interfaces.Services;
+
+namespace Remp.Remp.Service;
+
+public class AuthService : IAuthService
+{
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly IConfiguration _configuration;
+    private readonly RempDbContext _dbContext;
+
+    public AuthService(UserManager<IdentityUser> userManager, IConfiguration configuration, RempDbContext dbContext)
+    {
+        _userManager = userManager;
+        _configuration = configuration;
+        _dbContext = dbContext;
+    }
+
+    public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
+    {
+        IdentityUser? user = await _userManager.FindByEmailAsync(loginRequestDto.Email);
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("Invalid email or password.");
+        }
+
+        bool isPasswordValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+        if (!isPasswordValid)
+        {
+            throw new UnauthorizedAccessException("Invalid email or password.");
+        }
+
+        IList<string> roles = await _userManager.GetRolesAsync(user);
+        string role = roles.FirstOrDefault() ?? "Agent";
+
+        string token = GenerateJwtToken(user, role);
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto
+        {
+            UserId = user.Id,
+            Email = user.Email!,
+            Role = role,
+            Token = token
+        };
+
+        if (role == "Admin")
+        {
+            PhotographyCompany? company = await _dbContext.PhotographyCompanies
+                .FirstOrDefaultAsync(p => p.Id == user.Id);
+            if (company != null)
+            {
+                loginResponseDto.PhotographyCompanyName = company.PhotographyCompanyName;
+            }
+        }
+        else if (role == "Agent")
+        {
+            Agent? agent = await _dbContext.Agents
+                .FirstOrDefaultAsync(a => a.Id == user.Id);
+            if (agent != null)
+            {
+                loginResponseDto.AgentFirstName = agent.AgentFirstName;
+                loginResponseDto.AgentLastName = agent.AgentLastName;
+                loginResponseDto.AvatarUrl = agent.AvatarUrl;
+                loginResponseDto.CompanyName = agent.CompanyName;
+            }
+        }
+
+        return loginResponseDto;
+    }
+
+    private string GenerateJwtToken(IdentityUser user, string role)
+    {
+        var jwtSettings = _configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["SecretKey"]!;
+
+        List<Claim> claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        JwtSecurityToken token = new JwtSecurityToken(
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+}

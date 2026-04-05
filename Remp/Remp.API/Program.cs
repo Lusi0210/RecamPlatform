@@ -61,6 +61,8 @@ builder.Services.AddAutoMapper(cfg => {}, typeof(MappingProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<CreateListingCaseRequestDto>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateListingCaseRequestDto>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 
 using (IServiceScope scope = app.Services.CreateScope())
