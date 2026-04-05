@@ -1,9 +1,9 @@
 using System;
 using Remp.Remp.DataAccess;
-using Remp.Remp.Models;
 using Remp.Remp.Models.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Remp.Remp.Models.Enum;
+using Remp.Remp.Models.Entities;
 
 namespace Remp.Remp.Repository;
 

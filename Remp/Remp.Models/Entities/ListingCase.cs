@@ -1,6 +1,6 @@
 using System;
 
-namespace Remp.Remp.Models;
+namespace Remp.Remp.Models.Entities;
 
 public class ListingCase
 {

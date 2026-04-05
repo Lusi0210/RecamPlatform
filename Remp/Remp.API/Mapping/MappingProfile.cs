@@ -2,6 +2,7 @@ using System;
 using Remp.Remp.Models;
 using Remp.Remp.Models.DTOs;
 using AutoMapper;
+using Remp.Remp.Models.Entities;
 
 namespace Remp.Remp.API.Mapping;
 

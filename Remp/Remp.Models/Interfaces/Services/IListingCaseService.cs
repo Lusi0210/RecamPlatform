@@ -1,5 +1,6 @@
 using System;
 using Remp.Remp.Models.DTOs;
+using Remp.Remp.Models.Entities;
 using Remp.Remp.Repository;
 
 namespace Remp.Remp.Models.Interfaces.Services;

@@ -5,6 +5,7 @@ using Remp.Remp.Models;
 using Remp.Remp.Models.DTOs;
 using Remp.Remp.Models.Interfaces.Services;
 using Remp.Remp.Common.Responses;
+using Remp.Remp.Models.Entities;
 
 namespace Remp.Remp.API.Controllers
 {

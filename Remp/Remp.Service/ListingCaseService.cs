@@ -3,6 +3,7 @@ using Remp.Remp.Models;
 using Remp.Remp.Models.Interfaces.Repositories;
 using Remp.Remp.Models.Interfaces.Services;
 using Remp.Remp.Models.Enum;
+using Remp.Remp.Models.Entities;
 
 namespace Remp.Remp.Service;
 

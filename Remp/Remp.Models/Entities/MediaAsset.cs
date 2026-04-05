@@ -1,7 +1,7 @@
 using System;
 using Remp.Remp.Models.Enum;
 
-namespace Remp.Remp.Models;
+namespace Remp.Remp.Models.Entities;
 
 public class MediaAsset
 {

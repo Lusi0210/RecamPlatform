@@ -1,4 +1,5 @@
 using System;
+using Remp.Remp.Models.Entities;
 
 namespace Remp.Remp.Models.Interfaces.Repositories;
 
