@@ -196,4 +196,59 @@ public class AuthService : IAuthService
         return response;
     }
 
+    public async Task<CurrentUserResponseDto> GetCurrentUserAsync(string userId)
+    {
+        IdentityUser? user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        IList<string> roles = await _userManager.GetRolesAsync(user);
+        string role = roles.FirstOrDefault() ?? "Agent";
+
+        CurrentUserResponseDto responseDto = new CurrentUserResponseDto
+        {
+            UserId = user.Id,
+            Email = user.Email!,
+            Role = role,
+            AssignedListingCaseIds = new List<int>()
+        };
+
+        if (role == "Admin")
+        {
+            PhotographyCompany? company = await _dbContext.PhotographyCompanies
+                .FirstOrDefaultAsync(p => p.Id == user.Id);
+            if (company != null)
+            {
+                responseDto.PhotographyCompanyName = company.PhotographyCompanyName;
+            }
+
+            responseDto.AssignedListingCaseIds = await _dbContext.ListingCases
+                .Where(l => l.UserId == user.Id && !l.IsDeleted)
+                .Select(l => l.Id)
+                .ToListAsync();
+        }
+        else if (role == "Agent")
+        {
+            Agent? agent = await _dbContext.Agents
+                .FirstOrDefaultAsync(a => a.Id == user.Id);
+            if (agent != null)
+            {
+                responseDto.AgentFirstName = agent.AgentFirstName;
+                responseDto.AgentLastName = agent.AgentLastName;
+                responseDto.AvatarUrl = agent.AvatarUrl;
+                responseDto.CompanyName = agent.CompanyName;
+            }
+
+            responseDto.AssignedListingCaseIds = await _dbContext.AgentListingCases
+                .Where(al => al.AgentId == user.Id)
+                .Select(al => al.ListingCaseId)
+                .ToListAsync();
+        }
+
+        return responseDto;
+    }
+
+
 }

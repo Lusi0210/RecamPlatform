@@ -89,5 +89,32 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"GetAllUsers: Returned {users.TotalCount} users");
             return Ok(apiResponse);
         }
+
+
+        [HttpGet("me")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<CurrentUserResponseDto>>> GetCurrentUser()
+        {
+            _logger.LogInformation("GetCurrentUser: Received request");
+
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            CurrentUserResponseDto currentUser = await _authService.GetCurrentUserAsync(userId);
+
+            APIResponses<CurrentUserResponseDto> apiResponse = new APIResponses<CurrentUserResponseDto>
+            {
+                Success = true,
+                Message = "Current user retrieved successfully",
+                Data = currentUser,
+                Errors = null
+            };
+
+            _logger.LogInformation($"GetCurrentUser: Returned user {currentUser.Email}");
+            return Ok(apiResponse);
+        }
     }
+    
 }
