@@ -103,4 +103,51 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public async Task<RegisterResponseDto> RegisterAgentAsync(RegisterRequestDto registerRequestDto)
+    {
+        IdentityUser? existingUser = await _userManager.FindByEmailAsync(registerRequestDto.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email is already registered.");
+        }
+
+        IdentityUser newUser = new IdentityUser
+        {
+            UserName = registerRequestDto.Email,
+            Email = registerRequestDto.Email
+        };
+
+        IdentityResult result = await _userManager.CreateAsync(newUser, registerRequestDto.Password);
+        if (!result.Succeeded)
+        {
+            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Registration failed: {errors}");
+        }
+
+        await _userManager.AddToRoleAsync(newUser, "Agent");
+
+        Agent agent = new Agent
+        {
+            Id = newUser.Id,
+            AgentFirstName = registerRequestDto.AgentFirstName,
+            AgentLastName = registerRequestDto.AgentLastName,
+            AvatarUrl = "",
+            CompanyName = ""
+        };
+
+        await _dbContext.Agents.AddAsync(agent);
+        await _dbContext.SaveChangesAsync();
+
+        RegisterResponseDto responseDto = new RegisterResponseDto
+        {
+            UserId = newUser.Id,
+            Email = newUser.Email!,
+            Role = "Agent",
+            AgentFirstName = agent.AgentFirstName,
+            AgentLastName = agent.AgentLastName
+        };
+
+        return responseDto;
+    }
+
 }

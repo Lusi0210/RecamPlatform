@@ -6,4 +6,5 @@ namespace Remp.Remp.Models.Interfaces.Services;
 public interface IAuthService
 {
     Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequest);
+    Task<RegisterResponseDto> RegisterAgentAsync(RegisterRequestDto registerRequestDto);
 }

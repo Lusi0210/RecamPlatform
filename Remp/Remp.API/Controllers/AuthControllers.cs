@@ -41,5 +41,27 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"Login: User {loginResponse.Email} logged in successfully with role {loginResponse.Role}");
             return Ok(apiResponse);
         }
+
+        [HttpPost("register")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<RegisterResponseDto>>> Register([FromBody] RegisterRequestDto registerRequestDto)
+        {
+            _logger.LogInformation("Register: Received registration request");
+
+            RegisterResponseDto registerResponse = await _authService.RegisterAgentAsync(registerRequestDto);
+
+            APIResponses<RegisterResponseDto> apiResponse = new APIResponses<RegisterResponseDto>
+            {
+                Success = true,
+                Message = "Agent registered successfully",
+                Data = registerResponse,
+                Errors = null
+            };
+
+            _logger.LogInformation($"Register: Agent {registerResponse.Email} registered successfully");
+            return Created("", apiResponse);
+        }
     }
 }
