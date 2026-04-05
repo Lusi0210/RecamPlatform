@@ -30,7 +30,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<RempDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services
-    .AddIdentity<IdentityUser, IdentityRole>()
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+    })
     .AddEntityFrameworkStores<RempDbContext>()
     .AddDefaultTokenProviders();
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -69,6 +72,16 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     RoleManager<IdentityRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleSeeder.SeedRolesAsync(roleManager);
+}
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    RoleManager<IdentityRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleSeeder.SeedRolesAsync(roleManager);
+
+    UserManager<IdentityUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    RempDbContext dbContext = scope.ServiceProvider.GetRequiredService<RempDbContext>();
+    await RoleSeeder.SeedAdminAsync(userManager, dbContext);
 }
 
 // Configure the HTTP request pipeline.

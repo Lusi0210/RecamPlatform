@@ -150,4 +150,50 @@ public class AuthService : IAuthService
         return responseDto;
     }
 
+    public async Task<PaginatedResponseDto<UserResponseDto>> GetAllUsersAsync(PaginationRequestDto paginationRequest)
+    {
+        // Get all users with Agent role
+        IList<IdentityUser> agentUsers = await _userManager.GetUsersInRoleAsync("Agent");
+
+        int totalCount = agentUsers.Count;
+        int totalPages = (int)Math.Ceiling(totalCount / (double)paginationRequest.PageSize);
+
+        List<IdentityUser> pagedUsers = agentUsers
+            .Skip((paginationRequest.PageNumber - 1) * paginationRequest.PageSize)
+            .Take(paginationRequest.PageSize)
+            .ToList();
+
+        List<UserResponseDto> userDtos = new List<UserResponseDto>();
+
+        foreach (IdentityUser user in pagedUsers)
+        {
+            Agent? agent = await _dbContext.Agents
+                .FirstOrDefaultAsync(a => a.Id == user.Id);
+
+            UserResponseDto userDto = new UserResponseDto
+            {
+                UserId = user.Id,
+                Email = user.Email!,
+                Role = "Agent",
+                AgentFirstName = agent?.AgentFirstName,
+                AgentLastName = agent?.AgentLastName,
+                AvatarUrl = agent?.AvatarUrl,
+                CompanyName = agent?.CompanyName
+            };
+
+            userDtos.Add(userDto);
+        }
+
+        PaginatedResponseDto<UserResponseDto> response = new PaginatedResponseDto<UserResponseDto>
+        {
+            Items = userDtos,
+            TotalCount = totalCount,
+            PageNumber = paginationRequest.PageNumber,
+            PageSize = paginationRequest.PageSize,
+            TotalPages = totalPages
+        };
+
+        return response;
+    }
+
 }

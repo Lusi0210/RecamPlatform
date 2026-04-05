@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Remp.Remp.Common.Responses;
@@ -62,6 +63,31 @@ namespace Remp.Remp.API.Controllers
 
             _logger.LogInformation($"Register: Agent {registerResponse.Email} registered successfully");
             return Created("", apiResponse);
+        }
+
+
+        [HttpGet("users")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<PaginatedResponseDto<UserResponseDto>>>> GetAllUsers([FromQuery] PaginationRequestDto paginationRequest)
+        {
+            _logger.LogInformation("GetAllUsers: Received request");
+
+            PaginatedResponseDto<UserResponseDto> users = await _authService.GetAllUsersAsync(paginationRequest);
+
+            APIResponses<PaginatedResponseDto<UserResponseDto>> apiResponse = new APIResponses<PaginatedResponseDto<UserResponseDto>>
+            {
+                Success = true,
+                Message = "Users retrieved successfully",
+                Data = users,
+                Errors = null
+            };
+
+            _logger.LogInformation($"GetAllUsers: Returned {users.TotalCount} users");
+            return Ok(apiResponse);
         }
     }
 }
