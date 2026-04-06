@@ -31,4 +31,12 @@ public class AgentPhotographyCompanyRepository : IAgentPhotographyCompanyReposit
         }
         throw new Exception("Failed to add agent to photography company.");
     }
+
+    public async Task<List<string>> GetAgentIdsByCompanyIdAsync(string photographyCompanyId)
+    {
+        return await _dbContext.AgentPhotographyCompanies
+            .Where(ap => ap.PhotographyCompanyId == photographyCompanyId)
+            .Select(ap => ap.AgentId)
+            .ToListAsync();
+    }
 }

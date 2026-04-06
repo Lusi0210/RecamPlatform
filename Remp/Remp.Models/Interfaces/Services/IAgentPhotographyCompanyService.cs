@@ -6,4 +6,5 @@ namespace Remp.Remp.Models.Interfaces.Services;
 public interface IAgentPhotographyCompanyService
 {
     Task<AgentPhotographyCompanyResponseDto> AddAgentToCompanyAsync(string agentId, string photographyCompanyId);
+    Task<List<UserResponseDto>> GetAgentsByCompanyAsync(string photographyCompanyId);
 }

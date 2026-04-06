@@ -46,5 +46,31 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"AddAgentToCompany: Agent {requestDto.AgentId} added successfully");
             return Created("", apiResponse);
         }
+
+        [HttpGet("agents")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<List<UserResponseDto>>>> GetAgentsByCompany()
+        {
+            _logger.LogInformation("GetAgentsByCompany: Received request");
+
+            string photographyCompanyId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            List<UserResponseDto> agents = await _agentPhotographyCompanyService.GetAgentsByCompanyAsync(photographyCompanyId);
+
+            APIResponses<List<UserResponseDto>> apiResponse = new APIResponses<List<UserResponseDto>>
+            {
+                Success = true,
+                Message = "Agents retrieved successfully",
+                Data = agents,
+                Errors = null
+            };
+
+            _logger.LogInformation($"GetAgentsByCompany: Returned {agents.Count} agents");
+            return Ok(apiResponse);
+        }
     }
 }

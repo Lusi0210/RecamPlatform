@@ -7,4 +7,5 @@ public interface IAgentPhotographyCompanyRepository
 {
     Task<bool> RelationExistsAsync(string agentId, string photographyCompanyId);
     Task<AgentPhotographyCompany> AddAgentToCompanyAsync(AgentPhotographyCompany agentPhotographyCompany);
+    Task<List<string>> GetAgentIdsByCompanyIdAsync(string photographyCompanyId);
 }
