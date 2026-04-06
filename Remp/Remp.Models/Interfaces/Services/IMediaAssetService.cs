@@ -1,5 +1,6 @@
 using System;
 using Remp.Remp.Models.DTOs;
+using Remp.Remp.Models.Enum;
 
 namespace Remp.Remp.Models.Interfaces.Services;
 
@@ -7,4 +8,5 @@ public interface IMediaAssetService
 {
     Task<List<GroupedMediaResponseDto>> GetMediaByListingCaseIdAsync(int listingCaseId);
     Task<bool> DeleteMediaAsync(int mediaId, string userId);
+    Task<List<MediaAssetResponseDto>> UploadMediaAssetsAsync(List<IFormFile> files, MediaType mediaType, int listingCaseId, string userId);
 }

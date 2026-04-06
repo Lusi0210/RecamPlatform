@@ -1,6 +1,8 @@
 using System;
+using Microsoft.AspNetCore.Http;
 using Remp.Remp.Models.DTOs;
 using Remp.Remp.Models.Entities;
+using Remp.Remp.Models.Enum;
 using Remp.Remp.Models.Interfaces.Repositories;
 using Remp.Remp.Models.Interfaces.Services;
 
@@ -9,10 +11,12 @@ namespace Remp.Remp.Service;
 public class MediaAssetService : IMediaAssetService
 {
     private readonly IMediaAssetRepository _mediaAssetRepository;
+    private readonly IBlobStorageService _blobStorageService;
 
-    public MediaAssetService(IMediaAssetRepository mediaAssetRepository)
+    public MediaAssetService(IMediaAssetRepository mediaAssetRepository, IBlobStorageService blobStorageService)
     {
         _mediaAssetRepository = mediaAssetRepository;
+        _blobStorageService = blobStorageService;
     }
 
     public async Task<List<GroupedMediaResponseDto>> GetMediaByListingCaseIdAsync(int listingCaseId)
@@ -50,5 +54,57 @@ public class MediaAssetService : IMediaAssetService
 
         bool result = await _mediaAssetRepository.DeleteMediaAsync(mediaId);
         return result;
+    }
+
+    public async Task<List<MediaAssetResponseDto>> UploadMediaAssetsAsync(List<IFormFile> files, MediaType mediaType, int listingCaseId, string userId)
+    {
+        // Validate: non-picture types only allow single file
+        if (mediaType != MediaType.Photos && files.Count > 1)
+        {
+            throw new InvalidOperationException("Only Photos type allows multiple file uploads.");
+        }
+
+        // Validate: at least one file
+        if (files.Count < 1)
+        {
+            throw new InvalidOperationException("At least one file is required.");
+        }
+
+        List<MediaAssetResponseDto> responseDtos = new List<MediaAssetResponseDto>();
+
+        foreach (IFormFile file in files)
+        {
+            // Upload to Blob Storage
+            using Stream stream = file.OpenReadStream();
+            string mediaUrl = await _blobStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
+
+            // Save to database
+            MediaAsset mediaAsset = new MediaAsset
+            {
+                MediaType = mediaType,
+                MediaUrl = mediaUrl,
+                UploadedAt = DateTime.UtcNow,
+                IsSelect = false,
+                IsHero = false,
+                ListingCaseId = listingCaseId,
+                UserId = userId,
+                IsDeleted = false
+            };
+
+            MediaAsset savedAsset = await _mediaAssetRepository.AddMediaAssetAsync(mediaAsset);
+
+            responseDtos.Add(new MediaAssetResponseDto
+            {
+                Id = savedAsset.Id,
+                MediaType = savedAsset.MediaType,
+                MediaUrl = savedAsset.MediaUrl,
+                UploadedAt = savedAsset.UploadedAt,
+                IsSelect = savedAsset.IsSelect,
+                IsHero = savedAsset.IsHero,
+                ListingCaseId = savedAsset.ListingCaseId
+            });
+        }
+
+        return responseDtos;
     }
 }

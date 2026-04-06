@@ -47,4 +47,15 @@ public class MediaAssetRepository : IMediaAssetRepository
         int changes = await _dbContext.SaveChangesAsync();
         return changes > 0;
     }
+
+    public async Task<MediaAsset> AddMediaAssetAsync(MediaAsset mediaAsset)
+    {
+        await _dbContext.MediaAssets.AddAsync(mediaAsset);
+        int changes = await _dbContext.SaveChangesAsync();
+        if (changes > 0)
+        {
+            return mediaAsset;
+        }
+        throw new Exception("Failed to add media asset.");
+    }
 }

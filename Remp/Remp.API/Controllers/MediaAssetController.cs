@@ -65,5 +65,34 @@ namespace Remp.Remp.API.Controllers
 
             throw new Exception("Failed to delete media asset.");
         }
+
+        [HttpPost("upload")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<List<MediaAssetResponseDto>>>> UploadMediaAssets(IFormFile files, [FromForm] Remp.Models.Enum.MediaType mediaType, [FromForm] int listingCaseId)
+        {
+            _logger.LogInformation($"UploadMediaAssets: Received request for listing case {listingCaseId}");
+
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            List<IFormFile> fileList = new List<IFormFile> { files };
+
+            List<MediaAssetResponseDto> responseDtos = await _mediaAssetService.UploadMediaAssetsAsync(fileList, mediaType, listingCaseId, userId);
+
+            APIResponses<List<MediaAssetResponseDto>> apiResponse = new APIResponses<List<MediaAssetResponseDto>>
+            {
+                Success = true,
+                Message = "Media assets uploaded successfully",
+                Data = responseDtos,
+                Errors = null
+            };
+
+            _logger.LogInformation($"UploadMediaAssets: Uploaded {responseDtos.Count} files for listing case {listingCaseId}");
+            return Created("", apiResponse);
+        }
     }
 }
