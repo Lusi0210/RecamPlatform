@@ -1,4 +1,5 @@
 using System;
+using System.IO.Compression;
 using Microsoft.AspNetCore.Http;
 using Remp.Remp.Models.DTOs;
 using Remp.Remp.Models.Entities;
@@ -115,5 +116,34 @@ public class MediaAssetService : IMediaAssetService
         var (fileStream, contentType, fileName) = await _blobStorageService.DownloadFileAsync(mediaAsset.MediaUrl);
 
         return (fileStream, contentType, fileName);
+    }
+
+    public async Task<(Stream Content, string FileName)> DownloadAllMediaByListingCaseAsync(int listingCaseId)
+    {
+        List<MediaAsset> mediaAssets = await _mediaAssetRepository.GetMediaByListingCaseIdAsync(listingCaseId);
+
+        if (mediaAssets.Count == 0)
+        {
+            throw new KeyNotFoundException($"No media assets found for listing case {listingCaseId}.");
+        }
+
+        MemoryStream zipStream = new MemoryStream();
+
+        using (ZipArchive archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
+        {
+            foreach (MediaAsset mediaAsset in mediaAssets)
+            {
+                var (fileStream, contentType, fileName) = await _blobStorageService.DownloadFileAsync(mediaAsset.MediaUrl);
+
+                ZipArchiveEntry entry = archive.CreateEntry(fileName);
+                using Stream entryStream = entry.Open();
+                await fileStream.CopyToAsync(entryStream);
+            }
+        }
+
+        zipStream.Position = 0;
+        string zipFileName = $"ListingCase_{listingCaseId}_Media.zip";
+
+        return (zipStream, zipFileName);
     }
 }
