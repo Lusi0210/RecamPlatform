@@ -152,5 +152,28 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"SetCoverImage: Media {requestDto.MediaId} set as cover for listing case {listingCaseId}");
             return Ok(apiResponse);
         }
+
+        [HttpGet("listing/{listingCaseId}/final-selection")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<List<MediaAssetResponseDto>>>> GetFinalSelection(int listingCaseId)
+        {
+            _logger.LogInformation($"GetFinalSelection: Received request for listing case {listingCaseId}");
+
+            List<MediaAssetResponseDto> selectedMedia = await _mediaAssetService.GetFinalSelectionAsync(listingCaseId);
+
+            APIResponses<List<MediaAssetResponseDto>> apiResponse = new APIResponses<List<MediaAssetResponseDto>>
+            {
+                Success = true,
+                Message = "Final selection retrieved successfully",
+                Data = selectedMedia,
+                Errors = null
+            };
+
+            _logger.LogInformation($"GetFinalSelection: Returned {selectedMedia.Count} selected media for listing case {listingCaseId}");
+            return Ok(apiResponse);
+        }
     }
 }

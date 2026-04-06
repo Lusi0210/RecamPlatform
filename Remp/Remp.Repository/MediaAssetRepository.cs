@@ -69,4 +69,12 @@ public class MediaAssetRepository : IMediaAssetRepository
         }
         throw new Exception("Failed to update media asset.");
     }
+
+    public async Task<List<MediaAsset>> GetSelectedMediaByListingCaseIdAsync(int listingCaseId)
+    {
+        return await _dbContext.MediaAssets
+            .Where(m => m.ListingCaseId == listingCaseId && m.IsSelect && !m.IsDeleted)
+            .OrderByDescending(m => m.UploadedAt)
+            .ToListAsync();
+    }
 }

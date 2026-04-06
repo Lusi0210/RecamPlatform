@@ -184,4 +184,22 @@ public class MediaAssetService : IMediaAssetService
 
         return responseDto;
     }
+
+    public async Task<List<MediaAssetResponseDto>> GetFinalSelectionAsync(int listingCaseId)
+    {
+        List<MediaAsset> selectedMedia = await _mediaAssetRepository.GetSelectedMediaByListingCaseIdAsync(listingCaseId);
+
+        List<MediaAssetResponseDto> responseDtos = selectedMedia.Select(m => new MediaAssetResponseDto
+        {
+            Id = m.Id,
+            MediaType = m.MediaType,
+            MediaUrl = m.MediaUrl,
+            UploadedAt = m.UploadedAt,
+            IsSelect = m.IsSelect,
+            IsHero = m.IsHero,
+            ListingCaseId = m.ListingCaseId
+        }).ToList();
+
+        return responseDtos;
+    }
 }
