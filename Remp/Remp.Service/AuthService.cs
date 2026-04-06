@@ -17,12 +17,14 @@ public class AuthService : IAuthService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IConfiguration _configuration;
     private readonly RempDbContext _dbContext;
+    private readonly IEmailService _emailService;
 
-    public AuthService(UserManager<IdentityUser> userManager, IConfiguration configuration, RempDbContext dbContext)
+    public AuthService(UserManager<IdentityUser> userManager, IConfiguration configuration, RempDbContext dbContext, IEmailService emailService)
     {
         _userManager = userManager;
         _configuration = configuration;
         _dbContext = dbContext;
+        _emailService = emailService;
     }
 
     public async Task<LoginResponseDto> LoginAsync(LoginRequestDto loginRequestDto)
@@ -295,7 +297,14 @@ public class AuthService : IAuthService
         await _dbContext.AgentPhotographyCompanies.AddAsync(agentPhotographyCompany);
         await _dbContext.SaveChangesAsync();
 
-        // TODO: Send email with login credentials
+        string emailBody = $@"
+            <h2>Welcome to Recam Platform</h2>
+            <p>Your account has been created. Here are your login credentials:</p>
+            <p><strong>Email:</strong> {requestDto.Email}</p>
+            <p><strong>Password:</strong> {generatedPassword}</p>
+            <p>Please change your password after first login.</p>";
+
+        await _emailService.SendEmailAsync(requestDto.Email, "Recam - Your Account Has Been Created", emailBody);
         // TODO: Log activity to MongoDB
 
         CreateAgentResponseDto responseDto = new CreateAgentResponseDto

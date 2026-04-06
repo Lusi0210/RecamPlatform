@@ -23,9 +23,12 @@ builder.Configuration
     .AddJsonFile($"Remp.API/appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
+
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+
+
 
 builder.Services.AddDbContext<RempDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -74,6 +77,9 @@ builder.Services.AddScoped<ICaseContactService, CaseContactService>();
 
 builder.Services.AddScoped<IAgentPhotographyCompanyRepository, AgentPhotographyCompanyRepository>();
 builder.Services.AddScoped<IAgentPhotographyCompanyService, AgentPhotographyCompanyService>();
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 var app = builder.Build();
 
