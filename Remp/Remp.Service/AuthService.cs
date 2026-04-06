@@ -334,5 +334,36 @@ public class AuthService : IAuthService
         return new string(password.OrderBy(c => random.Next()).ToArray());
     }
 
+    public async Task<UserResponseDto> SearchAgentByEmailAsync(string email)
+    {
+        IdentityUser? user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            throw new KeyNotFoundException("Agent not found.");
+        }
+
+        IList<string> roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("Agent"))
+        {
+            throw new KeyNotFoundException("Agent not found.");
+        }
+
+        Agent? agent = await _dbContext.Agents
+            .FirstOrDefaultAsync(a => a.Id == user.Id);
+
+        UserResponseDto responseDto = new UserResponseDto
+        {
+            UserId = user.Id,
+            Email = user.Email!,
+            Role = "Agent",
+            AgentFirstName = agent?.AgentFirstName,
+            AgentLastName = agent?.AgentLastName,
+            AvatarUrl = agent?.AvatarUrl,
+            CompanyName = agent?.CompanyName
+        };
+
+        return responseDto;
+    }
+
 
 }

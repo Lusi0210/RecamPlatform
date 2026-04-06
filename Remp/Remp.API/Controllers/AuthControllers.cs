@@ -142,6 +142,31 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"CreateAgent: Agent {responseDto.Email} created successfully");
             return Created("", apiResponse);
         }
+
+        [HttpGet("search-agent")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<UserResponseDto>>> SearchAgentByEmail([FromQuery] string email)
+        {
+            _logger.LogInformation($"SearchAgentByEmail: Searching for agent with email {email}");
+
+            UserResponseDto agent = await _authService.SearchAgentByEmailAsync(email);
+
+            APIResponses<UserResponseDto> apiResponse = new APIResponses<UserResponseDto>
+            {
+                Success = true,
+                Message = "Agent found",
+                Data = agent,
+                Errors = null
+            };
+
+            _logger.LogInformation($"SearchAgentByEmail: Found agent {agent.Email}");
+            return Ok(apiResponse);
+        }
     }
     
 }

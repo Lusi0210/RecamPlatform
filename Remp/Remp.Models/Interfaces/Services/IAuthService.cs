@@ -10,5 +10,6 @@ public interface IAuthService
     Task<PaginatedResponseDto<UserResponseDto>> GetAllUsersAsync(PaginationRequestDto paginationRequest);
     Task<CurrentUserResponseDto> GetCurrentUserAsync(string userId);
     Task<CreateAgentResponseDto> CreateAgentAsync(CreateAgentRequestDto requestDto, string photographyCompanyId);
+    Task<UserResponseDto> SearchAgentByEmailAsync(string email);
 
 }
