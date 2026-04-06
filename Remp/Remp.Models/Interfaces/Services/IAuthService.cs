@@ -11,5 +11,6 @@ public interface IAuthService
     Task<CurrentUserResponseDto> GetCurrentUserAsync(string userId);
     Task<CreateAgentResponseDto> CreateAgentAsync(CreateAgentRequestDto requestDto, string photographyCompanyId);
     Task<UserResponseDto> SearchAgentByEmailAsync(string email);
+    Task<bool> UpdatePasswordAsync(string userId, UpdatePasswordRequestDto requestDto);
 
 }

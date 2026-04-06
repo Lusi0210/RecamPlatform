@@ -167,6 +167,32 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"SearchAgentByEmail: Found agent {agent.Email}");
             return Ok(apiResponse);
         }
+
+        [HttpPut("update-password")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<string>>> UpdatePassword([FromBody] UpdatePasswordRequestDto requestDto)
+        {
+            _logger.LogInformation("UpdatePassword: Received request");
+
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            await _authService.UpdatePasswordAsync(userId, requestDto);
+
+            APIResponses<string> apiResponse = new APIResponses<string>
+            {
+                Success = true,
+                Message = "Password updated successfully",
+                Data = null,
+                Errors = null
+            };
+
+            _logger.LogInformation("UpdatePassword: Password updated successfully");
+            return Ok(apiResponse);
+        }
     }
     
 }

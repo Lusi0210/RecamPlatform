@@ -365,5 +365,25 @@ public class AuthService : IAuthService
         return responseDto;
     }
 
+    public async Task<bool> UpdatePasswordAsync(string userId, UpdatePasswordRequestDto requestDto)
+    {
+        IdentityUser? user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            throw new KeyNotFoundException("User not found.");
+        }
+
+        IdentityResult result = await _userManager.ChangePasswordAsync(user, requestDto.CurrentPassword, requestDto.NewPassword);
+        if (!result.Succeeded)
+        {
+            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Password update failed: {errors}");
+        }
+
+        // TODO: Log activity to MongoDB
+
+        return true;
+    }
+
 
 }
