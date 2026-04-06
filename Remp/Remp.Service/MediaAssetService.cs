@@ -107,4 +107,13 @@ public class MediaAssetService : IMediaAssetService
 
         return responseDtos;
     }
+
+    public async Task<(Stream Content, string ContentType, string FileName)> DownloadMediaAssetAsync(int mediaAssetId)
+    {
+        MediaAsset mediaAsset = await _mediaAssetRepository.GetMediaByIdAsync(mediaAssetId);
+
+        var (fileStream, contentType, fileName) = await _blobStorageService.DownloadFileAsync(mediaAsset.MediaUrl);
+
+        return (fileStream, contentType, fileName);
+    }
 }

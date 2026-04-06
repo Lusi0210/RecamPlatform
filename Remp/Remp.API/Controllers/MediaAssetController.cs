@@ -94,5 +94,21 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"UploadMediaAssets: Uploaded {responseDtos.Count} files for listing case {listingCaseId}");
             return Created("", apiResponse);
         }
+
+        [HttpGet("download/{id}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> DownloadMediaAsset(int id)
+        {
+            _logger.LogInformation($"DownloadMediaAsset: Received request for media {id}");
+
+            var (fileStream, contentType, fileName) = await _mediaAssetService.DownloadMediaAssetAsync(id);
+
+            _logger.LogInformation($"DownloadMediaAsset: Downloading media {id}");
+            return File(fileStream, contentType, fileName);
+        }
     }
 }
