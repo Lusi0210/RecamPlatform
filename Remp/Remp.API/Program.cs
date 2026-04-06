@@ -80,6 +80,8 @@ builder.Services.AddScoped<IAgentPhotographyCompanyService, AgentPhotographyComp
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+
 
 var app = builder.Build();
 
