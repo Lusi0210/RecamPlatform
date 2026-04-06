@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Remp.Remp.Common.Responses;
@@ -39,6 +40,31 @@ namespace Remp.Remp.API.Controllers
 
             _logger.LogInformation($"GetCaseContacts: Returned {caseContacts.Count} contacts for listing case {listingCaseId}");
             return Ok(apiResponse);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Agent")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<CaseContactResponseDto>>> AddCaseContact([FromBody] AddCaseContactRequestDto requestDto)
+        {
+            _logger.LogInformation($"AddCaseContact: Received request for listing case {requestDto.ListingCaseId}");
+
+            CaseContactResponseDto responseDto = await _caseContactService.AddCaseContactAsync(requestDto);
+
+            APIResponses<CaseContactResponseDto> apiResponse = new APIResponses<CaseContactResponseDto>
+            {
+                Success = true,
+                Message = "Case contact added successfully",
+                Data = responseDto,
+                Errors = null
+            };
+
+            _logger.LogInformation($"AddCaseContact: Contact added with id {responseDto.ContactId}");
+            return Created("", apiResponse);
         }
     }
 }

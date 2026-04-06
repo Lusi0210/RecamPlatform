@@ -33,4 +33,34 @@ public class CaseContactService : ICaseContactService
 
         return responseDtos;
     }
+
+    public async Task<CaseContactResponseDto> AddCaseContactAsync(AddCaseContactRequestDto requestDto)
+    {
+        CaseContact caseContact = new CaseContact
+        {
+            FirstName = requestDto.FirstName,
+            LastName = requestDto.LastName,
+            CompanyName = requestDto.CompanyName,
+            ProfileUrl = requestDto.ProfileUrl,
+            Email = requestDto.Email,
+            PhoneNumber = requestDto.PhoneNumber,
+            ListingCaseId = requestDto.ListingCaseId
+        };
+
+        CaseContact newCaseContact = await _caseContactRepository.AddCaseContactAsync(caseContact);
+
+        CaseContactResponseDto responseDto = new CaseContactResponseDto
+        {
+            ContactId = newCaseContact.ContactId,
+            FirstName = newCaseContact.FirstName,
+            LastName = newCaseContact.LastName,
+            CompanyName = newCaseContact.CompanyName,
+            ProfileUrl = newCaseContact.ProfileUrl,
+            Email = newCaseContact.Email,
+            PhoneNumber = newCaseContact.PhoneNumber,
+            ListingCaseId = newCaseContact.ListingCaseId
+        };
+
+        return responseDto;
+    }
 }

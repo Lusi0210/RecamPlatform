@@ -21,4 +21,15 @@ public class CaseContactRepository : ICaseContactRepository
             .Where(c => c.ListingCaseId == listingCaseId)
             .ToListAsync();
     }
+
+    public async Task<CaseContact> AddCaseContactAsync(CaseContact caseContact)
+    {
+        await _dbContext.CaseContacts.AddAsync(caseContact);
+        int changes = await _dbContext.SaveChangesAsync();
+        if (changes > 0)
+        {
+            return caseContact;
+        }
+        throw new Exception("Failed to add case contact.");
+    }
 }

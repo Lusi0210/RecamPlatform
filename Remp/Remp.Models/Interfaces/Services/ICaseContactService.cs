@@ -6,4 +6,5 @@ namespace Remp.Remp.Models.Interfaces.Services;
 public interface ICaseContactService
 {
     Task<List<CaseContactResponseDto>> GetCaseContactsByListingCaseIdAsync(int listingCaseId);
+    Task<CaseContactResponseDto> AddCaseContactAsync(AddCaseContactRequestDto requestDto);
 }   
