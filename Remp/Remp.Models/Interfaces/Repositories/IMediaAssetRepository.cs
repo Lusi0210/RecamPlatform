@@ -9,4 +9,5 @@ public interface IMediaAssetRepository
     Task<MediaAsset> GetMediaByIdAsync(int id);
     Task<bool> DeleteMediaAsync(int id);
     Task<MediaAsset> AddMediaAssetAsync(MediaAsset mediaAsset);
+    Task<MediaAsset> UpdateMediaAssetAsync(MediaAsset mediaAsset);
 }

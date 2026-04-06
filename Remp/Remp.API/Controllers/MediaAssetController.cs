@@ -126,5 +126,31 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"DownloadAllMedia: Returning ZIP for listing case {listingCaseId}");
             return File(zipStream, "application/zip", fileName);
         }
+
+        [HttpPut("listing/{listingCaseId}/cover-image")]
+        [Authorize(Roles = "Agent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<MediaAssetResponseDto>>> SetCoverImage(int listingCaseId, [FromBody] SetCoverImageRequestDto requestDto)
+        {
+            _logger.LogInformation($"SetCoverImage: Received request for listing case {listingCaseId}, media {requestDto.MediaId}");
+
+            MediaAssetResponseDto responseDto = await _mediaAssetService.SetCoverImageAsync(listingCaseId, requestDto.MediaId);
+
+            APIResponses<MediaAssetResponseDto> apiResponse = new APIResponses<MediaAssetResponseDto>
+            {
+                Success = true,
+                Message = "Cover image set successfully",
+                Data = responseDto,
+                Errors = null
+            };
+
+            _logger.LogInformation($"SetCoverImage: Media {requestDto.MediaId} set as cover for listing case {listingCaseId}");
+            return Ok(apiResponse);
+        }
     }
 }

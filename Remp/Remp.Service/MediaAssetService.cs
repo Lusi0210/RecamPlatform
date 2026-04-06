@@ -146,4 +146,42 @@ public class MediaAssetService : IMediaAssetService
 
         return (zipStream, zipFileName);
     }
+
+    public async Task<MediaAssetResponseDto> SetCoverImageAsync(int listingCaseId, int mediaId)
+    {
+        // Verify media belongs to this listing
+        MediaAsset mediaAsset = await _mediaAssetRepository.GetMediaByIdAsync(mediaId);
+        if (mediaAsset.ListingCaseId != listingCaseId)
+        {
+            throw new InvalidOperationException("This media does not belong to the specified listing case.");
+        }
+
+        // Remove current hero
+        List<MediaAsset> currentMedia = await _mediaAssetRepository.GetMediaByListingCaseIdAsync(listingCaseId);
+        foreach (MediaAsset media in currentMedia)
+        {
+            if (media.IsHero)
+            {
+                media.IsHero = false;
+                await _mediaAssetRepository.UpdateMediaAssetAsync(media);
+            }
+        }
+
+        // Set new hero
+        mediaAsset.IsHero = true;
+        MediaAsset updatedAsset = await _mediaAssetRepository.UpdateMediaAssetAsync(mediaAsset);
+
+        MediaAssetResponseDto responseDto = new MediaAssetResponseDto
+        {
+            Id = updatedAsset.Id,
+            MediaType = updatedAsset.MediaType,
+            MediaUrl = updatedAsset.MediaUrl,
+            UploadedAt = updatedAsset.UploadedAt,
+            IsSelect = updatedAsset.IsSelect,
+            IsHero = updatedAsset.IsHero,
+            ListingCaseId = updatedAsset.ListingCaseId
+        };
+
+        return responseDto;
+    }
 }

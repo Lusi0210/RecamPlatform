@@ -58,4 +58,15 @@ public class MediaAssetRepository : IMediaAssetRepository
         }
         throw new Exception("Failed to add media asset.");
     }
+
+    public async Task<MediaAsset> UpdateMediaAssetAsync(MediaAsset mediaAsset)
+    {
+        _dbContext.MediaAssets.Update(mediaAsset);
+        int changes = await _dbContext.SaveChangesAsync();
+        if (changes > 0)
+        {
+            return mediaAsset;
+        }
+        throw new Exception("Failed to update media asset.");
+    }
 }
