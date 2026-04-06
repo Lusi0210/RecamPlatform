@@ -115,6 +115,33 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"GetCurrentUser: Returned user {currentUser.Email}");
             return Ok(apiResponse);
         }
+
+        [HttpPost("create-agent")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<CreateAgentResponseDto>>> CreateAgent([FromBody] CreateAgentRequestDto requestDto)
+        {
+            _logger.LogInformation("CreateAgent: Received request");
+
+            string photographyCompanyId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value!;
+
+            CreateAgentResponseDto responseDto = await _authService.CreateAgentAsync(requestDto, photographyCompanyId);
+
+            APIResponses<CreateAgentResponseDto> apiResponse = new APIResponses<CreateAgentResponseDto>
+            {
+                Success = true,
+                Message = "Agent created successfully",
+                Data = responseDto,
+                Errors = null
+            };
+
+            _logger.LogInformation($"CreateAgent: Agent {responseDto.Email} created successfully");
+            return Created("", apiResponse);
+        }
     }
     
 }

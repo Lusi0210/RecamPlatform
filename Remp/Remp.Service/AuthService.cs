@@ -250,5 +250,89 @@ public class AuthService : IAuthService
         return responseDto;
     }
 
+    public async Task<CreateAgentResponseDto> CreateAgentAsync(CreateAgentRequestDto requestDto, string photographyCompanyId)
+    {
+        IdentityUser? existingUser = await _userManager.FindByEmailAsync(requestDto.Email);
+        if (existingUser != null)
+        {
+            throw new InvalidOperationException("Email is already registered.");
+        }
+
+        string generatedPassword = GenerateRandomPassword();
+
+        IdentityUser newUser = new IdentityUser
+        {
+            UserName = requestDto.Email,
+            Email = requestDto.Email
+        };
+
+        IdentityResult result = await _userManager.CreateAsync(newUser, generatedPassword);
+        if (!result.Succeeded)
+        {
+            string errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to create agent: {errors}");
+        }
+
+        await _userManager.AddToRoleAsync(newUser, "Agent");
+
+        Agent agent = new Agent
+        {
+            Id = newUser.Id,
+            AgentFirstName = requestDto.AgentFirstName,
+            AgentLastName = requestDto.AgentLastName,
+            AvatarUrl = "",
+            CompanyName = ""
+        };
+
+        await _dbContext.Agents.AddAsync(agent);
+
+        AgentPhotographyCompany agentPhotographyCompany = new AgentPhotographyCompany
+        {
+            AgentId = newUser.Id,
+            PhotographyCompanyId = photographyCompanyId
+        };
+
+        await _dbContext.AgentPhotographyCompanies.AddAsync(agentPhotographyCompany);
+        await _dbContext.SaveChangesAsync();
+
+        // TODO: Send email with login credentials
+        // TODO: Log activity to MongoDB
+
+        CreateAgentResponseDto responseDto = new CreateAgentResponseDto
+        {
+            UserId = newUser.Id,
+            Email = newUser.Email!,
+            AgentFirstName = agent.AgentFirstName,
+            AgentLastName = agent.AgentLastName,
+            GeneratedPassword = generatedPassword
+        };
+
+        return responseDto;
+    }
+
+    private string GenerateRandomPassword()
+    {
+        string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        string lower = "abcdefghijklmnopqrstuvwxyz";
+        string digits = "0123456789";
+        string special = "!@#$%^&*";
+
+        Random random = new Random();
+
+        char[] password = new char[12];
+        password[0] = upper[random.Next(upper.Length)];
+        password[1] = lower[random.Next(lower.Length)];
+        password[2] = digits[random.Next(digits.Length)];
+        password[3] = special[random.Next(special.Length)];
+
+        string allChars = upper + lower + digits + special;
+        for (int i = 4; i < 12; i++)
+        {
+            password[i] = allChars[random.Next(allChars.Length)];
+        }
+
+        return new string(password.OrderBy(c => random.Next()).ToArray());
+    }
+
 
 }

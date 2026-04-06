@@ -9,4 +9,6 @@ public interface IAuthService
     Task<RegisterResponseDto> RegisterAgentAsync(RegisterRequestDto registerRequestDto);
     Task<PaginatedResponseDto<UserResponseDto>> GetAllUsersAsync(PaginationRequestDto paginationRequest);
     Task<CurrentUserResponseDto> GetCurrentUserAsync(string userId);
+    Task<CreateAgentResponseDto> CreateAgentAsync(CreateAgentRequestDto requestDto, string photographyCompanyId);
+
 }
