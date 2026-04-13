@@ -175,5 +175,30 @@ namespace Remp.Remp.API.Controllers
             _logger.LogInformation($"GetFinalSelection: Returned {selectedMedia.Count} selected media for listing case {listingCaseId}");
             return Ok(apiResponse);
         }
+
+        [HttpPut("listing/{listingCaseId}/selected-media")]
+        [Authorize(Roles = "Agent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<List<MediaAssetResponseDto>>>> SelectMedia(int listingCaseId, [FromBody] SelectMediaRequestDto requestDto)
+        {
+            _logger.LogInformation($"SelectMedia: Received request for listing case {listingCaseId}");
+
+            List<MediaAssetResponseDto> responseDtos = await _mediaAssetService.SelectMediaAsync(listingCaseId, requestDto.MediaIds);
+
+            APIResponses<List<MediaAssetResponseDto>> apiResponse = new APIResponses<List<MediaAssetResponseDto>>
+            {
+                Success = true,
+                Message = "Media selected successfully",
+                Data = responseDtos,
+                Errors = null
+            };
+
+            _logger.LogInformation($"SelectMedia: {responseDtos.Count} media selected for listing case {listingCaseId}");
+            return Ok(apiResponse);
+        }
     }
 }

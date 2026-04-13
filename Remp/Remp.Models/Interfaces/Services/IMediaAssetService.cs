@@ -14,4 +14,5 @@ public interface IMediaAssetService
     Task<(Stream Content, string FileName)> DownloadAllMediaByListingCaseAsync(int listingCaseId);
     Task<MediaAssetResponseDto> SetCoverImageAsync(int listingCaseId, int mediaId);
     Task<List<MediaAssetResponseDto>> GetFinalSelectionAsync(int listingCaseId);
+    Task<List<MediaAssetResponseDto>> SelectMediaAsync(int listingCaseId, List<int> mediaIds);
 }

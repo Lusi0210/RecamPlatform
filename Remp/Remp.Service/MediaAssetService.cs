@@ -202,4 +202,59 @@ public class MediaAssetService : IMediaAssetService
 
         return responseDtos;
     }
+
+    public async Task<List<MediaAssetResponseDto>> SelectMediaAsync(int listingCaseId, List<int> mediaIds)
+    {
+        // Validate max 10
+        if (mediaIds.Count > 10)
+        {
+            throw new InvalidOperationException("Maximum 10 images can be selected.");
+        }
+
+        // Get all media for this listing
+        List<MediaAsset> allMedia = await _mediaAssetRepository.GetMediaByListingCaseIdAsync(listingCaseId);
+
+        // Validate all mediaIds belong to this listing
+        foreach (int mediaId in mediaIds)
+        {
+            if (!allMedia.Any(m => m.Id == mediaId))
+            {
+                throw new InvalidOperationException($"Media {mediaId} does not belong to listing case {listingCaseId}.");
+            }
+        }
+
+        // Reset all current selections
+        foreach (MediaAsset media in allMedia)
+        {
+            if (media.IsSelect)
+            {
+                media.IsSelect = false;
+                await _mediaAssetRepository.UpdateMediaAssetAsync(media);
+            }
+        }
+
+        // Set new selections
+        List<MediaAssetResponseDto> responseDtos = new List<MediaAssetResponseDto>();
+        foreach (int mediaId in mediaIds)
+        {
+            MediaAsset media = allMedia.First(m => m.Id == mediaId);
+            media.IsSelect = true;
+            MediaAsset updatedMedia = await _mediaAssetRepository.UpdateMediaAssetAsync(media);
+
+            responseDtos.Add(new MediaAssetResponseDto
+            {
+                Id = updatedMedia.Id,
+                MediaType = updatedMedia.MediaType,
+                MediaUrl = updatedMedia.MediaUrl,
+                UploadedAt = updatedMedia.UploadedAt,
+                IsSelect = updatedMedia.IsSelect,
+                IsHero = updatedMedia.IsHero,
+                ListingCaseId = updatedMedia.ListingCaseId
+            });
+        }
+
+        // TODO: Log selection event to MongoDB
+
+        return responseDtos;
+    }
 }
