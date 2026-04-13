@@ -6,6 +6,7 @@ using Remp.Remp.Models.DTOs;
 using Remp.Remp.Models.Interfaces.Services;
 using Remp.Remp.Common.Responses;
 using Remp.Remp.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Remp.Remp.API.Controllers
 {
@@ -170,6 +171,31 @@ namespace Remp.Remp.API.Controllers
             };
             _logger.LogInformation($"Update ListingCase Status: Successfully updated status of listing case with id {id}");
             return Ok(apiResponses);
+        }
+
+        [HttpPost("{id}/publish")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<APIResponses<string>>> PublishListingCase(int id)
+        {
+            _logger.LogInformation($"PublishListingCase: Received request for listing case {id}");
+
+            string shareableUrl = await _listingCaseService.PublishListingCaseAsync(id);
+
+            APIResponses<string> apiResponse = new APIResponses<string>
+            {
+                Success = true,
+                Message = "Listing case published successfully",
+                Data = shareableUrl,
+                Errors = null
+            };
+
+            _logger.LogInformation($"PublishListingCase: Published listing case {id} with url {shareableUrl}");
+            return Ok(apiResponse);
         }
 
     }

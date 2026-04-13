@@ -55,6 +55,20 @@ public class ListingCaseService : IListingCaseService
         ListingCase updatedListingCase = await _listingcaseDbContext.UpdateListingCaseStatusAsync(id, newStatus);
         return updatedListingCase;
     }
+
+    public async Task<string> PublishListingCaseAsync(int listingCaseId)
+    {
+        ListingCase listingCase = await _listingcaseDbContext.GetListingCaseByIdAsync(listingCaseId);
+
+        // Generate unique shareable URL
+        string uniqueToken = Guid.NewGuid().ToString("N");
+        string shareableUrl = $"https://recam.com/listing/{uniqueToken}";
+
+        listingCase.ShareableUrl = shareableUrl;
+        await _listingcaseDbContext.UpdateListingCaseAsync(listingCase);
+
+        return shareableUrl;
+    }
     
     
 }

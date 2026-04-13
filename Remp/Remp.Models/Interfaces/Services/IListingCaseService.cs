@@ -13,4 +13,5 @@ public interface IListingCaseService
     Task<ListingCase> UpdateListingCaseAsync(ListingCase listingCase);
     Task<bool> DeleteListingCaseAsync(int id);
     Task<ListingCase> UpdateListingCaseStatusAsync(int id, Enum.ListcaseStatus newStatus);
+    Task<string> PublishListingCaseAsync(int listingCaseId);
 }

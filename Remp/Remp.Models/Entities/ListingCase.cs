@@ -24,4 +24,5 @@ public class ListingCase
     public Enum.SaleCategory SaleCategory { get; set; }
     public Enum.ListcaseStatus ListcaseStatus { get; set; }
     public string UserId { get; set; }
+    public string? ShareableUrl { get; set; }
 }
