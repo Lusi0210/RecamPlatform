@@ -4,6 +4,7 @@ using Remp.Remp.Models.Interfaces.Repositories;
 using Remp.Remp.Models.Interfaces.Services;
 using Remp.Remp.Models.Enum;
 using Remp.Remp.Models.Entities;
+using Remp.Remp.Models.DTOs;
 
 namespace Remp.Remp.Service;
 
@@ -25,10 +26,43 @@ public class ListingCaseService : IListingCaseService
         return newListingCase;
     }
 
-    public async Task<List<ListingCase>> GetAllListingCasesAsync()
+    public async Task<PaginatedResponseDto<ListingCaseResponseDto>> GetAllListingCasesAsync(ListingCaseFilterRequestDto filter)
     {
-        List<ListingCase> listingCases = await _listingcaseDbContext.GetAllListingCasesAsync();
-        return listingCases;
+        var (items, totalCount) = await _listingcaseDbContext.GetAllListingCasesAsync(filter.PageNumber, filter.PageSize, filter.Status);
+
+        int totalPages = (int)Math.Ceiling(totalCount / (double)filter.PageSize);
+
+        List<ListingCaseResponseDto> responseDtos = items.Select(l => new ListingCaseResponseDto
+        {
+            Id = l.Id,
+            Title = l.Title,
+            Description = l.Description,
+            Street = l.Street,
+            City = l.City,
+            State = l.State,
+            PostCode = l.PostCode,
+            Longitude = l.Longitude,
+            Latitude = l.Latitude,
+            Price = l.Price,
+            Bedrooms = l.Bedrooms,
+            Bathrooms = l.Bathrooms,
+            Garages = l.Garages,
+            FloorArea = l.FloorArea,
+            CreatedAt = l.CreatedAt,
+            PropertyType = l.PropertyType,
+            SaleCategory = l.SaleCategory,
+            ListcaseStatus = l.ListcaseStatus,
+            UserId = l.UserId
+        }).ToList();
+
+        return new PaginatedResponseDto<ListingCaseResponseDto>
+        {
+            Items = responseDtos,
+            TotalCount = totalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize,
+            TotalPages = totalPages
+        };
     }
 
     public async Task<ListingCase> GetListingCaseByIdAsync(int id)

@@ -8,7 +8,7 @@ namespace Remp.Remp.Models.Interfaces.Services;
 public interface IListingCaseService
 {
     Task<ListingCase> CreateListingCaseAsync(ListingCase listingCaseCreateDto);
-    Task<List<ListingCase>> GetAllListingCasesAsync();
+    Task<PaginatedResponseDto<ListingCaseResponseDto>> GetAllListingCasesAsync(ListingCaseFilterRequestDto filter);
     Task<ListingCase> GetListingCaseByIdAsync(int id);
     Task<ListingCase> UpdateListingCaseAsync(ListingCase listingCase);
     Task<bool> DeleteListingCaseAsync(int id);

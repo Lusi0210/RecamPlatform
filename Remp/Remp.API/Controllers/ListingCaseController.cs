@@ -49,16 +49,15 @@ namespace Remp.Remp.API.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<APIResponses<List<ListingCaseResponseDto>>>> GetAllListingCases()
+        public async Task<ActionResult<APIResponses<PaginatedResponseDto<ListingCaseResponseDto>>>> GetAllListingCases([FromQuery] ListingCaseFilterRequestDto filter)
         {
             _logger.LogInformation("Get All ListingCases: Received request");
-            List<ListingCase> listingCases = await _listingCaseService.GetAllListingCasesAsync();
-            List<ListingCaseResponseDto> responseDtos = _mapper.Map<List<ListingCaseResponseDto>>(listingCases);
-            APIResponses<List<ListingCaseResponseDto>> apiResponse = new APIResponses<List<ListingCaseResponseDto>>
+            PaginatedResponseDto<ListingCaseResponseDto> result = await _listingCaseService.GetAllListingCasesAsync(filter);
+            APIResponses<PaginatedResponseDto<ListingCaseResponseDto>> apiResponse = new APIResponses<PaginatedResponseDto<ListingCaseResponseDto>>
             {
                 Success = true,
                 Message = "Listing cases retrieved successfully",
-                Data = responseDtos,
+                Data = result,
                 Errors = null
             };
             return Ok(apiResponse);

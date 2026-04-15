@@ -30,9 +30,24 @@ public class ListingCaseRepository: IListingCaseRepository
         }
     }
 
-    public async Task<List<ListingCase>> GetAllListingCasesAsync()
+    public async Task<(List<ListingCase> Items, int TotalCount)> GetAllListingCasesAsync(int pageNumber, int pageSize, Models.Enum.ListcaseStatus? status)
     {
-        return await _dbContext.ListingCases.Where(x => !x.IsDeleted).OrderByDescending(x => x.CreatedAt).ToListAsync();
+        IQueryable<ListingCase> query = _dbContext.ListingCases.Where(x => !x.IsDeleted);
+
+        if (status.HasValue)
+        {
+            query = query.Where(x => x.ListcaseStatus == status.Value);
+        }
+
+        int totalCount = await query.CountAsync();
+
+        List<ListingCase> items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
     }
 
     public async Task<ListingCase> GetListingCaseByIdAsync(int id)
