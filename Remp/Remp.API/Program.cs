@@ -82,6 +82,9 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
+builder.Services.AddScoped<IAgentListingCaseRepository, AgentListingCaseRepository>();
+builder.Services.AddScoped<IAgentListingCaseService, AgentListingCaseService>();
+
 
 var app = builder.Build();
 

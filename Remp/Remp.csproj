@@ -31,7 +31,6 @@
     <Folder Include="Remp.Common\" />
     <Folder Include="Remp.Common\Responses\" />
     <Folder Include="Remp.DataAccess\" />
-    <Folder Include="Remp.Models\DTOs\" />
     <Folder Include="Remp.Models\Enum\" />
     <Folder Include="Remp.Models\Interfaces\" />
     <Folder Include="Remp.Models\Interfaces\Repositories\" />
