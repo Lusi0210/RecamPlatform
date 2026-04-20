@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp", "Remp\Remp.csproj", "{4A11DB66-2B16-4AED-9830-15559F020A8D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Remp.Tests", "Remp\Remp.Tests\Remp.Tests.csproj", "{66771263-4C09-4111-AD0B-467A8E513025}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{4A11DB66-2B16-4AED-9830-15559F020A8D}.Release|x64.Build.0 = Release|Any CPU
 		{4A11DB66-2B16-4AED-9830-15559F020A8D}.Release|x86.ActiveCfg = Release|Any CPU
 		{4A11DB66-2B16-4AED-9830-15559F020A8D}.Release|x86.Build.0 = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|x64.Build.0 = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Debug|x86.Build.0 = Debug|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|x64.ActiveCfg = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|x64.Build.0 = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|x86.ActiveCfg = Release|Any CPU
+		{66771263-4C09-4111-AD0B-467A8E513025}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

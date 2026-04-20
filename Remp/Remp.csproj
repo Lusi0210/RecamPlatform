@@ -40,4 +40,11 @@
     <Folder Include="Remp.Service\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Remp.Tests/**" />
+    <Content Remove="Remp.Tests/**" />
+    <None Remove="Remp.Tests/**" />
+    <EmbeddedResource Remove="Remp.Tests/**" />
+  </ItemGroup>
+
 </Project>
